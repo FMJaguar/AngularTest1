@@ -1,0 +1,34 @@
+<!doctype html>
+<html ng-app="SearchModule">
+  <head>
+  	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css"/>
+    <script src="./common/angular.js"></script>
+    <script>
+      var module = angular.module('SearchModule',[]);
+
+      module.config(function($routeProvider){
+        $routeProvider
+          .when('/', {controller:SearchCtrl, templateUrl: '/partials/main.html'})
+          .when('/detail', {controller:SearchCtrl, templateUrl: '/partials/detail.html'})
+          .otherwise({controller:SearchCtrl, templateUrl: '/partials/notfound.html'})
+      })
+      var SearchCtrl = function($scope){
+        $scope.name = "name1121";
+      }
+    </script>
+    <script type="text/ng-template" id="/partials/main.html">
+      main
+    </script>
+    <script type="text/ng-template" id="/partials/detail.html">
+      detail
+    </script>
+    <script type="text/ng-template" id="/partials/notfound.html">
+      notfound
+    </script>    
+  </head>
+  <body>
+    <div ng-view>
+      view{{name}}
+    </div>
+  </body>
+</html>
