@@ -8,22 +8,50 @@
 
 			module.config(function($routeProvider){
 				$routeProvider
-					.when('/', {controller:SearchCtrl, templateUrl: '/partials/main.html'})
-					.when('/detail', {controller:SearchCtrl, templateUrl: '/partials/detail.html'})
-					.otherwise({controller:SearchCtrl, templateUrl: '/partials/notfound.html'})
-			})
-			var TestCtrl = function($scope){
+					.when('/', {controller:'SearchCtrl', templateUrl: '/partials/main.html'})
+					.when('/detail/:itemId', {
+						templateUrl: '/partials/detail.html',
+						controller: function ($scope,$routeParams,item){
+							console.log($routeParams.itemId);
+							$scope.item = item;
+						},
+						resolve: {
+							item: function($q, $route, itemService){
+								var def = $q.defer();
+								var itemId = $route.current.params.itemId;
+								def.resolve(itemService.findById(itemId));
+								return def.promise;
+							}
+						}
+					})
+					.otherwise({controller:'SearchCtrl', templateUrl: '/partials/notfound.html'})
+			});
+
+			module.factory('itemService',function($http){
+				var itemService = function(){};
+				itemService.test = function(){ console.log('yo'); };
+				itemService.findById = function(id){
+					return {name: id + '-name'};			
+				}
+				return itemService;
+			});
+
+			module.controller('SearchCtrl', ['$scope','itemService', function($scope,itemService){
+				$scope.name = "SearchCtrl";
+				$scope.test = function(){ itemService.test(); }
+			}]);
+
+			var TestCtrl = function($scope,itemService){
 				$scope.name = "Test Ctrl";
 			}
-			var SearchCtrl = function($scope){
-				$scope.name = "Search Ctrl";
-			}
+
 		</script>
 		<script type="text/ng-template" id="/partials/main.html">
-			main
+			main {{itemName}}
+			<a href="yo" ng-click="test()">Test</a>
 		</script>
 		<script type="text/ng-template" id="/partials/detail.html">
-			detail
+			detail {{item.name}}
 		</script>
 		<script type="text/ng-template" id="/partials/notfound.html">
 			notfound
@@ -31,7 +59,7 @@
 	</head>
 	<body>
 		<a href="#">Main {{name}}</a>
-		<a href="#/detail">Detail</a>
+		<a href="#/detail/1">Detail</a>
 		<a href="#/notfound">Not Found</a>
 		<br/><br/>
 		<div ng-view>
